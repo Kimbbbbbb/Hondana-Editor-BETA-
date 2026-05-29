@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #f0f0f0;
+        margin: 0;
+        padding: 110px 18px 18px;
+        min-height: 100vh;
+    }
+
+    .container {
+        background-color: #fff;
+        padding: 30px;
+        max-width: 980px;
+        width: 100%;
+        margin: 0 auto;
+        border-radius: 12px;
+        box-shadow: 0 10px 24px rgba(0, 0, 0, 0.08);
+    }
+
+    .ribben {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 1000;
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: flex-start;
+        gap: 10px;
+        background-color: #ff6347;
+        color: #fff;
+        padding: 14px 14px 12px;
+        border-radius: 0 0 12px 12px;
+        margin: 0;
+        box-shadow: 0 6px 18px rgba(0, 0, 0, 0.18);
+    }
+
+    .ribben h2 {
+        margin: 0;
+        font-size: 1rem;
+        font-weight: 700;
+        flex: 1 1 100%;
+        text-align: center;
+        letter-spacing: 1px;
+    }
+
+    .ribben button,
+    .ribben .align-dropdown > button,
+    .ribben .size-dropdown > button,
+    .ribben .font-dropdown > button,
+    .ribben .highlight-dropdown > button,
+    .ribben .bg-control > button,
+    .ribben .textcolor-dropdown > button {
+        background: rgba(255, 255, 255, 0.14);
+        color: #fff;
+        border: 1px solid rgba(255, 255, 255, 0.35);
+        padding: 10px 14px;
+        border-radius: 10px;
+        cursor: pointer;
+        font-weight: 700;
+        min-height: 44px;
+        min-width: 110px;
+        white-space: nowrap;
+        transition: transform 0.15s ease, background 0.15s ease, border-color 0.15s ease;
+    }
+
+    .ribben #boldBtn,
+    .ribben #italicBtn {
+        min-width: 76px;
+        padding: 10px 12px;
+    }
+
+    .ribben button:focus {
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.25);
+    }
+
+    #deleteCurrentPageBtn {
+        background: rgba(255, 255, 255, 0.22);
+    }
+
+    #deleteCurrentPageBtn:disabled {
+        opacity: 0.45;
+        cursor: not-allowed;
+    }
+
+    .ribben button:hover,
+    .font-menu-custom button:hover,
+    .clear-bg-btn:hover,
+    .import-label:hover {
+        opacity: 0.95;
+        transform: translateY(-1px);
+    }
+
+    .align-dropdown,
+    .size-dropdown,
+    .font-dropdown,
+    .highlight-dropdown,
+    .textcolor-dropdown,
+    .bg-control {
+        position: relative;
+        display: inline-block;
+    }
+
+    .align-dropdown button,
+    .size-dropdown button,
+    .font-dropdown button,
+    .highlight-dropdown button,
+    .textcolor-dropdown button,
+    .bg-control button {
+        min-width: 96px;
+    }
+
+    .highlight-menu {
+        display: grid;
+        grid-template-columns: repeat(6, minmax(0, 1fr));
+        gap: 8px;
+        padding: 10px;
+        min-width: 260px;
+        max-height: 280px;
+        overflow-y: auto;
+        overflow-x: hidden;
+    }
+
+    .highlight-menu::-webkit-scrollbar {
+        width: 8px;
+    }
+
+    .highlight-menu::-webkit-scrollbar-track {
+        background: #f1f1f1;
+        border-radius: 4px;
+    }
+
+    .highlight-menu::-webkit-scrollbar-thumb {
+        background: #c1c1c1;
+        border-radius: 4px;
+    }
+
+    .highlight-menu::-webkit-scrollbar-thumb:hover {
+        background: #a8a8a8;
+    }
+
+    .color-swatch {
+        width: 40px;
+        height: 40px;
+        border: 2px solid transparent;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: transform 0.2s, border-color 0.2s;
+    }
+
+    .color-swatch:hover {
+        border-color: #333;
+        transform: scale(1.08);
+    }
+
+    .color-swatch.active {
+        border-color: #000;
+        box-shadow: 0 0 8px rgba(0, 0, 0, 0.3);
+    }
+
+    .dropdown-menu {
+        display: none;
+        position: absolute;
+        top: calc(100% + 8px);
+        left: 0;
+        background: #fff;
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
+        color: #000;
+        z-index: 1001;
+        min-width: 190px;
+    }
+
+    .dropdown-menu.open {
+        display: block;
+    }
+
+    .dropdown-menu.size-menu {
+        max-height: 260px;
+        overflow-y: auto;
+        min-width: 150px;
+    }
+
+    .dropdown-menu.font-menu {
+        min-width: 220px;
+        max-width: 320px;
+    }
+
+    .dropdown-menu.highlight-menu {
+        max-height: 280px;
+        overflow-y: auto;
+        overflow-x: hidden;
+    }
+
+    .highlight-menu::-webkit-scrollbar {
+        width: 8px;
+    }
+
+    .highlight-menu::-webkit-scrollbar-track {
+        background: #f1f1f1;
+        border-radius: 4px;
+    }
+
+    .highlight-menu::-webkit-scrollbar-thumb {
+        background: #c1c1c1;
+        border-radius: 4px;
+    }
+
+    .highlight-menu::-webkit-scrollbar-thumb:hover {
+        background: #a8a8a8;
+    }
+
+    .font-menu .font-menu-custom {
+        padding: 10px;
+        border-top: 1px solid #eee;
+        background: #fafafa;
+    }
+
+    .font-menu-custom button {
+        width: 100%;
+        background: #ff6347;
+        color: #fff;
+        border: none;
+        padding: 10px;
+        border-radius: 6px;
+        cursor: pointer;
+        font-weight: bold;
+    }
+
+    .dropdown-menu button {
+        width: 100%;
+        background: transparent;
+        color: #000;
+        border: none;
+        border-bottom: 1px solid #eee;
+        padding: 10px 14px;
+        text-align: left;
+        font-size: 0.96rem;
+    }
+
+    .dropdown-menu button:last-child {
+        border-bottom: none;
+    }
+
+    .dropdown-menu button.active {
+        background: #f7f7f7;
+        color: #ff6347;
+        font-weight: bold;
+    }
+
+    /* Background control */
+    .bg-control .dropdown-menu {
+        min-width: 220px;
+        padding: 10px;
+    }
+
+    .bg-options {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        padding-bottom: 8px;
+    }
+
+    .bg-swatch {
+        width: 36px;
+        height: 28px;
+        border-radius: 6px;
+        cursor: pointer;
+        border: 2px solid transparent;
+    }
+
+    .bg-swatch:hover {
+        transform: scale(1.05);
+        border-color: rgba(0, 0, 0, 0.12);
+    }
+
+    .import-label,
+    .clear-bg-btn {
+        display: inline-block;
+        margin-top: 8px;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 0.94rem;
+    }
+
+    .import-label {
+        padding: 8px 10px;
+        background: #ff6347;
+        color: #fff;
+    }
+
+    .clear-bg-btn {
+        background: #eee;
+        border: none;
+        padding: 8px 10px;
+    }
+
+    .editable {
+        min-height: 800px;
+        max-height: 900px;
+        border: 1px solid #ccc;
+        padding: 16px;
+        border-radius: 10px;
+        background-color: #fff;
+        overflow: auto;
+    }
+
+    /* Page container styles for multiple pages */
+    #pages {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+    }
+
+    .page {
+        position: relative;
+    }
+
+    .delete-page {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        background: rgba(0, 0, 0, 0.05);
+        border: 1px solid rgba(0, 0, 0, 0.08);
+        border-radius: 6px;
+        width: 34px;
+        height: 34px;
+        cursor: pointer;
+        font-size: 18px;
+        line-height: 24px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    /* Never allow deleting the first (base) page */
+    .page:first-child .delete-page {
+        display: none;
+    }
+
+    .ribben button.active {
+        background: #ffffff;
+        color: #ff6347;
+        font-weight: bold;
+    }
+
+    .center {
+        text-align: center;
+    }
+
+    h2 {
+        color: #ffffff;
+        font-style: italic;
+        letter-spacing: 2px;
+        text-align: center;
+        margin: 0;
+    }
+
+    h3 {
+        text-align: center;
+        margin-top: 24px;
+        font-weight: normal;
+        color: #555;
+    }
+
+    p {
+        color: #000000;
+    }
+
+    @media (max-width: 900px) {
+        body {
+            padding: 110px 14px 16px;
+        }
+
+        .container {
+            padding: 24px;
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
+        }
+
+        .ribben {
+            justify-content: center;
+            gap: 8px;
+            padding: 14px 12px 12px;
+        }
+
+        .ribben h2 {
+            order: 1;
+            flex: 1 1 100%;
+        }
+
+        .ribben > * {
+            flex: 1 1 45%;
+            min-width: 160px;
+        }
+
+        .dropdown-menu {
+            position: static;
+            width: 100%;
+            margin-top: 8px;
+        }
+
+        .highlight-menu {
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            max-height: 300px;
+            overflow-y: auto;
+        }
+    }
+
+    @media (max-width: 640px) {
+        body {
+            padding: 120px 10px 14px;
+        }
+
+        .container {
+            padding: 18px;
+            border-radius: 8px;
+            box-shadow: none;
+        }
+
+        .ribben {
+            padding: 12px 10px 10px;
+            gap: 6px;
+        }
+
+        .ribben > * {
+            flex: 1 1 100%;
+            min-width: 100%;
+        }
+
+        .ribben button,
+        .import-label,
+        .clear-bg-btn {
+            width: 100%;
+            min-width: 0;
+        }
+
+        .dropdown-menu {
+            margin-top: 10px;
+            max-width: 100%;
+        }
+
+        .highlight-menu {
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            max-height: 320px;
+            overflow-y: auto;
+        }
+
+        .bg-options {
+            justify-content: flex-start;
+        }
+
+        .editable {
+            min-height: 900px;
+            max-height: 900px;
+        }
+    }
+</style>
+
+<body>
+
+    <div class="ribben">
+        <h2>Hondana Editor [BETA]</h2>
+        <div class="align-dropdown">
+            <button id="alignToggleBtn" type="button">Align ▼</button>
+            <div id="alignMenu" class="dropdown-menu">
+                <button class="align-option" type="button" data-align="left">Left</button>
+                <button class="align-option" type="button" data-align="center">Center</button>
+                <button class="align-option" type="button" data-align="right">Right</button>
+            </div>
+        </div>
+        <div class="size-dropdown">
+            <button id="fontSizeToggleBtn" type="button">Px ▼</button>
+            <div id="fontSizeMenu" class="dropdown-menu size-menu"></div>
+        </div>
+        <div class="font-dropdown">
+            <button id="fontStyleBtn" type="button">Font Style ▼</button>
+            <div id="fontStyleMenu" class="dropdown-menu font-menu">
+                <div class="font-menu-list"></div>
+            </div>
+        </div>
+        <div class="highlight-dropdown">
+            <button id="highlightBtn" type="button">Highlight ▼</button>
+            <div id="highlightMenu" class="dropdown-menu highlight-menu"></div>
+        </div>
+        <div class="bg-control">
+            <button id="backgroundBtn" type="button">Background ▼</button>
+            <div id="backgroundDropdown" class="dropdown-menu">
+                <button id="defaultBgBtn">Default</button>
+                <div class="bg-options">
+                    <div class="bg-swatch" data-color="#f0f0f0" style="background:#f0f0f0"></div>
+                    <div class="bg-swatch" data-color="#ffffff" style="background:#ffffff"></div>
+                    <div class="bg-swatch" data-color="#fff7e6" style="background:#fff7e6"></div>
+                    <div class="bg-swatch" data-color="#e6f7ff" style="background:#e6f7ff"></div>
+                    <div class="bg-swatch" data-color="#e6ffe6" style="background:#e6ffe6"></div>
+                    <div class="bg-swatch" data-color="#fff0f6" style="background:#fff0f6"></div>
+                    <div class="bg-swatch" data-color="#000000" style="background:#000000"></div>
+                </div>
+                <label for="bgImageInput" class="import-label">Import Image</label>
+                <input type="file" id="bgImageInput" accept="image/*" style="display:none">
+                <button id="clearBgBtn" class="clear-bg-btn">Clear Image</button>
+            </div>
+        </div>
+        <div class="textcolor-dropdown">
+            <button id="textColorBtn" type="button">Text Color ▼</button>
+            <div id="textColorMenu" class="dropdown-menu highlight-menu"></div>
+        </div>
+        <button id="boldBtn" type="button">Bold</button>
+        <button id="italicBtn" type="button">Italic</button>
+        <button id="newPageBtn" type="button">+ New Page</button>
+        <button id="deleteCurrentPageBtn" type="button">Delete Page</button>
+    </div>
+        <div class="container">
+            <div id="pages">
+                <div class="page">
+                    <div contenteditable="true" class="editable">
+                        <p>Type Here!</p>
+                    </div>
+                    <button class="delete-page" title="Delete page">×</button>
+                </div>
+            </div>
+        </div>
+<h3>@kimb Creeper</h3>
+    <script src="script.js"></script>
+</body>
+</html>
