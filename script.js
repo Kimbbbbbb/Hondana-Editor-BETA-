@@ -14,6 +14,7 @@ const textColorBtn = document.getElementById('textColorBtn');
 const textColorMenu = document.getElementById('textColorMenu');
 const newPageBtn = document.getElementById('newPageBtn');
 const deleteCurrentPageBtn = document.getElementById('deleteCurrentPageBtn');
+const toggleRibbonBtn = document.getElementById('toggleRibbonBtn');
 const pages = document.getElementById('pages');
 const PAGE_HEIGHT = 900;
 
@@ -666,6 +667,16 @@ if (deleteCurrentPageBtn) {
   });
 }
 
+if (toggleRibbonBtn) {
+  toggleRibbonBtn.addEventListener('click', () => {
+    const body = document.body;
+    const hidden = body.classList.toggle('ribbon-hidden');
+    toggleRibbonBtn.textContent = hidden ? 'Show Ribbon' : 'Hide Ribbon';
+    if (!hidden) {
+      body.style.paddingTop = '';
+    }
+  });
+}
 
 function toggleHighlightMenu(open) {
   if (!highlightMenu) return;
