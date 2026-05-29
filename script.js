@@ -240,9 +240,10 @@ function attachEditable(editable) {
 
 function onEditableInput(e) {
   const el = e.target;
-  // If content overflows this editable and it's the last page, create a new page
-  // Ensure content is flowed to next pages if overflowing
-  ensurePageFits(el);
+  // Avoid auto page splitting on small screens to prevent mobile typing freezes.
+  if (window.innerWidth > 640) {
+    ensurePageFits(el);
+  }
   updateButtonState();
   updateDeletePageButtonState();
 }
