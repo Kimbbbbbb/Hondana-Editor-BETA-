@@ -14,6 +14,8 @@ const textColorBtn = document.getElementById('textColorBtn');
 const textColorMenu = document.getElementById('textColorMenu');
 const newPageBtn = document.getElementById('newPageBtn');
 const saveWorkBtn = document.getElementById('saveWorkBtn');
+const loadWorkBtn = document.getElementById('loadWorkBtn');
+const loadWorkInput = document.getElementById('loadWorkInput');
 const deleteCurrentPageBtn = document.getElementById('deleteCurrentPageBtn');
 const toggleRibbonBtn = document.getElementById('toggleRibbonBtn');
 const pages = document.getElementById('pages');
@@ -424,6 +426,35 @@ function saveWork() {
   URL.revokeObjectURL(url);
 }
 
+function loadWork(file) {
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = () => {
+    try {
+      const json = JSON.parse(reader.result);
+      if (!json || !Array.isArray(json.pages)) {
+        throw new Error('Invalid work file');
+      }
+      const pagesData = json.pages.filter((pageContent) => typeof pageContent === 'string');
+      if (pagesData.length === 0) {
+        return;
+      }
+      while (pages.firstChild) {
+        pages.removeChild(pages.firstChild);
+      }
+      pagesData.forEach((pageContent, index) => {
+        createPage(index === 0 ? null : pages.lastElementChild, pageContent || '<p><br></p>');
+      });
+    } catch (error) {
+      console.warn('Failed to load saved work:', error);
+    }
+  };
+  reader.onerror = () => {
+    console.warn('Error reading file');
+  };
+  reader.readAsText(file);
+}
+
 function removePage(page) {
   if (!page || pages.children.length === 1 || page === pages.firstElementChild) return;
   const prev = page.previousElementSibling;
@@ -701,6 +732,20 @@ if (deleteCurrentPageBtn) {
 
 if (saveWorkBtn) {
   saveWorkBtn.addEventListener('click', saveWork);
+}
+
+if (loadWorkBtn && loadWorkInput) {
+  loadWorkBtn.addEventListener('click', () => {
+    loadWorkInput.value = '';
+    loadWorkInput.click();
+  });
+
+  loadWorkInput.addEventListener('change', (event) => {
+    const file = event.target.files && event.target.files[0];
+    if (file) {
+      loadWork(file);
+    }
+  });
 }
 
 if (toggleRibbonBtn) {
