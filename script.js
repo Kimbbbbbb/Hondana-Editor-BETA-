@@ -13,6 +13,7 @@ const highlightMenu = document.getElementById('highlightMenu');
 const textColorBtn = document.getElementById('textColorBtn');
 const textColorMenu = document.getElementById('textColorMenu');
 const newPageBtn = document.getElementById('newPageBtn');
+const saveWorkBtn = document.getElementById('saveWorkBtn');
 const deleteCurrentPageBtn = document.getElementById('deleteCurrentPageBtn');
 const toggleRibbonBtn = document.getElementById('toggleRibbonBtn');
 const pages = document.getElementById('pages');
@@ -393,6 +394,36 @@ function updateDeletePageButtonState() {
   deleteCurrentPageBtn.disabled = !canDelete;
 }
 
+function getEditorState() {
+  return Array.from(pages.querySelectorAll('.page')).map((page) => {
+    const editable = page.querySelector('.editable');
+    return editable ? editable.innerHTML : '';
+  });
+}
+
+function saveWork() {
+  const state = {
+    savedAt: new Date().toISOString(),
+    pages: getEditorState(),
+  };
+
+  try {
+    localStorage.setItem('hondana_editor_saved_work', JSON.stringify(state));
+  } catch (error) {
+    console.warn('Unable to save editor state to localStorage', error);
+  }
+
+  const blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = `hondana-work-${new Date().toISOString().replace(/[:.]/g, '-')}.json`;
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  URL.revokeObjectURL(url);
+}
+
 function removePage(page) {
   if (!page || pages.children.length === 1 || page === pages.firstElementChild) return;
   const prev = page.previousElementSibling;
@@ -666,6 +697,10 @@ if (deleteCurrentPageBtn) {
     const page = getCurrentPage();
     removePage(page);
   });
+}
+
+if (saveWorkBtn) {
+  saveWorkBtn.addEventListener('click', saveWork);
 }
 
 if (toggleRibbonBtn) {
