@@ -48,12 +48,12 @@ const fontFamilies = [
 
 const textColors = [
   '#000000',
+  '#ffffff',
   '#ff0000',
   '#0000ff',
   '#008000',
   '#800080',
   '#ff8c00',
-  '#ffffff',
   '#008080'
 ];
 
